@@ -5,21 +5,30 @@ import { TbEdit } from "react-icons/tb";
 export default function Todo() {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
+  const [changeColor, setChangeColor] = useState(false);
+  const [countTask, setCountTask] = useState(0);
+  const [countMarkingTask, setCountMarkingTask] = useState(0);
 
   function addTask(e) {
     e.preventDefault();
     if (newTask.trim() !== "") {
       setTasks([...tasks, newTask]);
       setNewTask("");
+      setCountTask(countTask + 1);
     }
   }
+
+  function markingTask() {
+    setChangeColor(!changeColor);
+  }
+
+  function editTask() {}
 
   function deleteTask(index) {
     const updatedTasks = tasks.filter((_, i) => i !== index);
     setTasks(updatedTasks);
+    setCountTask(countTask - 1);
   }
-
-  function editTask() {}
 
   return (
     <main className="flex flex-col items-center justify-center">
@@ -33,8 +42,10 @@ export default function Todo() {
             <p>keep it up</p>
           </div>
 
-          <div className="bg-orange-500 text-black font-bold text-2xl rounded-full px-3 py-3">
-            <span>1/3</span>
+          <div className="bg-orange-500 text-black font-bold text-2xl rounded-full px-5 py-3">
+            <span>
+              {countMarkingTask}/{countTask}
+            </span>
           </div>
         </div>
         <form className="flex items-center" onSubmit={addTask}>
@@ -55,8 +66,21 @@ export default function Todo() {
               key={index}
               className="bg-[#1E1E1E] w-full p-4 rounded-xl border border-orange-200 flex  "
             >
-              <button className=" rounded-full border border-orange-500 w-6 h-6"></button>
-              <span className="flex-1">{task}</span>
+              <button
+                className={`rounded-full border bg-green-600  w-6 h-6 ${
+                  changeColor === true
+                    ? "bg-opacity-100 border-green-600"
+                    : "bg-opacity-0 border-orange-500"
+                }`}
+                onClick={markingTask}
+              ></button>
+              <span
+                className={`flex-1 ${
+                  changeColor === true ? "line-through" : "no-underline"
+                }`}
+              >
+                {task}
+              </span>
               <button className="mr-1" onClick={editTask}>
                 <TbEdit size={25} />
               </button>
