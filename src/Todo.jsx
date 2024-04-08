@@ -1,33 +1,57 @@
 import React, { useState } from "react";
 import { FaTrash } from "react-icons/fa";
-import { TbEdit } from "react-icons/tb";
+import { TiEdit } from "react-icons/ti";
 
 export default function Todo() {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
-  const [changeColor, setChangeColor] = useState(false);
   const [countTask, setCountTask] = useState(0);
   const [countMarkingTask, setCountMarkingTask] = useState(0);
 
   function addTask(e) {
     e.preventDefault();
     if (newTask.trim() !== "") {
-      setTasks([...tasks, newTask]);
+      setTasks([...tasks, { id: tasks.length, title: newTask, seen: false }]);
       setNewTask("");
       setCountTask(countTask + 1);
     }
   }
 
-  function markingTask() {
-    setChangeColor(!changeColor);
+  function markingTask(taskId) {
+    setTasks(
+      tasks.map((task) => {
+        if (task.id === taskId) {
+          return { ...task, seen: !task.seen };
+        } else {
+          return task;
+        }
+      })
+    );
+    {
+      /* 
+  
+  
+   if (tasks.find((task) => task.id === taskId).seen) {
+      setCountMarkingTask(countMarkingTask - 1);
+    } else {
+      setCountMarkingTask(countMarkingTask + 1);
+    }
+  
+  */
+    }
   }
 
-  function editTask() {}
+  function editTask(index, updatedTask) {
+    const updatedTasks = [...tasks];
+    updatedTasks[index].title = updatedTask;
+    setTasks(updatedTasks);
+  }
 
   function deleteTask(index) {
     const updatedTasks = tasks.filter((_, i) => i !== index);
     setTasks(updatedTasks);
     setCountTask(countTask - 1);
+    setCountMarkingTask(countMarkingTask - 1);
   }
 
   return (
@@ -68,21 +92,26 @@ export default function Todo() {
             >
               <button
                 className={`rounded-full border bg-green-600  w-6 h-6 ${
-                  changeColor === true
+                  task.seen
                     ? "bg-opacity-100 border-green-600"
                     : "bg-opacity-0 border-orange-500"
                 }`}
-                onClick={markingTask}
+                onClick={() => markingTask(task.id)}
               ></button>
               <span
-                className={`flex-1 ${
-                  changeColor === true ? "line-through" : "no-underline"
+                className={` flex-1 ${
+                  task.seen ? "line-through" : "no-underline"
                 }`}
               >
-                {task}
+                {task.title}
               </span>
-              <button className="mr-1" onClick={editTask}>
-                <TbEdit size={25} />
+              <button
+                className="mr-1"
+                onClick={() => {
+                  editTask(index, prompt("Enter New Task", task.title));
+                }}
+              >
+                <TiEdit size={25} />
               </button>
               <button onClick={() => deleteTask(index)}>
                 <FaTrash size={20} />
