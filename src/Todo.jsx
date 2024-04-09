@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { TiEdit } from "react-icons/ti";
+import { IoExit } from "react-icons/io5";
 
 export default function Todo() {
   const [tasks, setTasks] = useState([]);
@@ -27,17 +28,11 @@ export default function Todo() {
         }
       })
     );
-    {
-      /* 
-  
-  
-   if (tasks.find((task) => task.id === taskId).seen) {
+
+    if (tasks.find((task) => task.id === taskId).seen) {
       setCountMarkingTask(countMarkingTask - 1);
     } else {
       setCountMarkingTask(countMarkingTask + 1);
-    }
-  
-  */
     }
   }
 
@@ -47,40 +42,48 @@ export default function Todo() {
     setTasks(updatedTasks);
   }
 
-  function deleteTask(index) {
-    const updatedTasks = tasks.filter((_, i) => i !== index);
+  function deleteTask(taskId, seen) {
+    const updatedTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(updatedTasks);
     setCountTask(countTask - 1);
-    setCountMarkingTask(countMarkingTask - 1);
+    if (seen) {
+      setCountMarkingTask(countMarkingTask - 1);
+    }
   }
 
   return (
-    <main className="flex flex-col items-center justify-center">
-      <div>
-        <h1 className="pt-10 text-xl uppercase font-bold">
+    <main className="flex flex-col mx-32 max-sm:mx-0">
+      <div className="flex justify-between py-10 items-center max-sm:justify-center">
+        <h1 className="text-xl uppercase font-bold">
           Xero<span className="text-orange-500">Todo</span>
         </h1>
-        <div className="border border-orange-200 rounded-xl flex justify-between p-10">
-          <div>
-            <h1 className="font-bold">Todo Done</h1>
-            <p>keep it up</p>
+        <button className="hover:text-orange-500 duration-700 max-sm:hidden">
+          <IoExit size={25} />
+        </button>
+      </div>
+
+      <div className="flex flex-col items-center">
+        <div className="border-[0.1px] border-orange-200 rounded-3xl flex justify-between p-10 items-center max-sm:p-5">
+          <div className="pl-5 mr-10">
+            <h1 className="font-bold text-3xl max-sm:text-2xl">Todo Done</h1>
+            <p className="tracking-widest text-xl max-sm:text-lg">keep it up</p>
           </div>
 
-          <div className="bg-orange-500 text-black font-bold text-2xl rounded-full px-5 py-3">
+          <div className="bg-orange-500 text-black font-bold text-2xl rounded-full p-7 max-sm:p-5">
             <span>
               {countMarkingTask}/{countTask}
             </span>
           </div>
         </div>
-        <form className="flex items-center" onSubmit={addTask}>
+        <form className="flex items-center mt-7 mb-7" onSubmit={addTask}>
           <input
             type="text"
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             placeholder="write your next task"
-            className="bg-[#1E1E1E] outline-none px-4 py-2 mr-3 rounded-xl placeholder:text-[#E8D7B9] placeholder:opacity-50"
+            className="bg-[#1E1E1E] outline-none pl-4 pr-16 py-2 mr-3 rounded-2xl placeholder:text-[#E8D7B9] placeholder:opacity-50"
           />
-          <button className="bg-orange-500 rounded-full px-4 py-1 text-3xl text-black font-bold">
+          <button className="bg-orange-500 rounded-full px-5 py-2 text-3xl text-black font-bold">
             +
           </button>
         </form>
@@ -88,7 +91,7 @@ export default function Todo() {
           {tasks.map((task, index) => (
             <li
               key={index}
-              className="bg-[#1E1E1E] w-full p-4 rounded-xl border border-orange-200 flex  "
+              className="bg-[#1E1E1E] w-full p-4 rounded-xl border-[0.1px] border-orange-200 flex mb-5"
             >
               <button
                 className={`rounded-full border bg-green-600  w-6 h-6 ${
@@ -99,7 +102,7 @@ export default function Todo() {
                 onClick={() => markingTask(task.id)}
               ></button>
               <span
-                className={` flex-1 ${
+                className={`pl-4 pr-40 text-xl font-bold flex-1 max-sm:pr-20 ${
                   task.seen ? "line-through" : "no-underline"
                 }`}
               >
@@ -113,7 +116,7 @@ export default function Todo() {
               >
                 <TiEdit size={25} />
               </button>
-              <button onClick={() => deleteTask(index)}>
+              <button onClick={() => deleteTask(task.id, task.seen)}>
                 <FaTrash size={20} />
               </button>
             </li>
